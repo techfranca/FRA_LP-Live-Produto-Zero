@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+:root {
+  --green: #7DE08D;
+  --dark-blue: #081534;
+  --white: #FFFFFF;
+}
+
+@theme inline {
+  --color-brand-green: #7DE08D;
+  --color-brand-blue: #081534;
+  --color-brand-green-dark: #5ea86a;
+  --font-sans: var(--font-geist-sans);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #081534;
+  color: #FFFFFF;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+input::placeholder {
+  color: #8892a8;
+}
