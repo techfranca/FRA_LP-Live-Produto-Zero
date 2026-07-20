@@ -1,30 +1,180 @@
 @import "tailwindcss";
 
+/*
+  ============================================================
+  IDENTIDADE VISUAL FRANCA (MIV 2.0) — tokens da marca
+  Verde = dinheiro/lucro/crescimento · Navy = solidez/confiança
+  ============================================================
+*/
 :root {
-  --green: #7DE08D;
-  --dark-blue: #081534;
-  --white: #FFFFFF;
+  /* Navy (base da marca) + degraus mais claros para superfícies/cards */
+  --navy: #081534;
+  --navy-800: #0b1c40;
+  --navy-700: #12264f;
+  --navy-600: #1b3160;
+
+  /* Verde (acento oficial) + escala com contraste testado */
+  --green: #7de08d;
+  --green-hover: #71ca7f;
+  --green-dark: #5ea86a;
+  --green-deep: #4b8655; /* verde de TEXTO sobre claro (AA) */
+  --green-fold: #598f74; /* verde da "dobra" da logo */
+  --green-tint: #f2fcf4;
+  --green-soft: #d7f5dc;
+
+  --white: #ffffff;
+  /* Tons de texto sobre o navy (branco em opacidades controladas) */
+  --ink: #ffffff;
+  --ink-soft: rgba(255, 255, 255, 0.72);
+  --ink-muted: rgba(255, 255, 255, 0.52);
+  --hairline: rgba(255, 255, 255, 0.1);
 }
 
+/*
+  Mapeia os tokens para o Tailwind v4 (classes bg-navy, text-green, etc.)
+  e amarra as fontes carregadas no layout (Poppins títulos / Montserrat corpo).
+*/
 @theme inline {
-  --color-brand-green: #7DE08D;
-  --color-brand-blue: #081534;
-  --color-brand-green-dark: #5ea86a;
-  --font-sans: var(--font-geist-sans);
+  --color-navy: #081534;
+  --color-navy-800: #0b1c40;
+  --color-navy-700: #12264f;
+  --color-navy-600: #1b3160;
+
+  --color-green: #7de08d;
+  --color-green-hover: #71ca7f;
+  --color-green-dark: #5ea86a;
+  --color-green-deep: #4b8655;
+  --color-green-fold: #598f74;
+  --color-green-tint: #f2fcf4;
+  --color-green-soft: #d7f5dc;
+
+  --font-display: var(--font-poppins);
+  --font-body: var(--font-montserrat);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+html {
+  scroll-behavior: smooth;
+  /* Compensa a top bar fixa ao rolar via âncora (#form) */
+  scroll-padding-top: 96px;
 }
 
 body {
-  background: #081534;
-  color: #FFFFFF;
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--navy);
+  color: var(--ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Títulos usam Poppins (wordmark da marca) */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
 }
 
 input::placeholder {
-  color: #8892a8;
+  color: var(--ink-muted);
+}
+
+/* Foco visível padrão (a11y) — verde da marca */
+:where(a, button, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/*
+  ============================================================
+  GRAFISMOS DA MARCA (o "slant"/dobra da logo vira linguagem)
+  ============================================================
+*/
+
+/* Grão sutil sobre o navy: dá textura premium sem peso de imagem */
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Barra de acento inclinada (ecoa o paralelogramo da logo) */
+.slant-accent {
+  transform: skewX(-14deg);
+}
+
+/*
+  Trama diagonal fina no ângulo da marca (-14deg).
+  Substitui os "glows" borrados por uma textura nítida e sóbria (premium).
+  Fica no ::after para conviver com o grão (que usa ::before).
+*/
+.brand-hairlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    -14deg,
+    transparent 0,
+    transparent 54px,
+    rgba(255, 255, 255, 0.022) 54px,
+    rgba(255, 255, 255, 0.022) 55px
+  );
+  mask-image: linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%);
+}
+
+/*
+  ============================================================
+  REVEAL no scroll (leve, CSS puro — sem lib de animação)
+  O componente Reveal apenas alterna data-visible.
+  ============================================================
+*/
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+[data-reveal][data-visible="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Pulso do indicador "ao vivo" */
+@keyframes live-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(125, 224, 141, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(125, 224, 141, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(125, 224, 141, 0);
+  }
+}
+.live-dot {
+  animation: live-pulse 2s infinite;
+}
+
+/* Respeita quem prefere menos movimento (a11y) */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .live-dot {
+    animation: none;
+  }
 }
